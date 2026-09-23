@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Perceptron Learning Rule: Student Practice Packet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-bg: #eff6ff;
+    --accent-border: #bfdbfe;
+    --spam: #dc2626;
+    --spam-bg: #fef2f2;
+    --spam-border: #fecaca;
+    --notspam: #059669;
+    --notspam-bg: #ecfdf5;
+    --notspam-border: #a7f3d0;
+    --code-bg: #0f172a;
+    --code-text: #f8fafc;
+    --radius: 12px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --card: #1f2937;
+      --border: #374151;
+      --border-strong: #4b5563;
+      --text: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --accent-bg: #1e293b;
+      --accent-border: #1e40af;
+      --spam: #f87171;
+      --spam-bg: #450a0a;
+      --spam-border: #7f1d1d;
+      --notspam: #34d399;
+      --notspam-bg: #064e3b;
+      --notspam-border: #065f46;
+      --code-bg: #030712;
+      --code-text: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 32px 16px 64px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; }
+
+  h1, h2, h3 { color: var(--text); font-weight: 700; tracking: -0.02em; }
+  h1 { font-size: 2rem; margin: 0 0 8px; line-height: 1.25; }
+  .subtitle { color: var(--text-secondary); font-size: 1.05rem; margin: 0 0 32px; font-weight: 400; }
+
+  /* --- Reading Section --- */
+  .reading { max-width: 760px; margin: 0 auto 48px; }
+  .reading h1.page-title { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.025em; margin: 12px 0 8px; }
+  .reading p.page-subtitle { color: var(--text-secondary); font-size: 1.125rem; margin: 0 0 36px; line-height: 1.6; }
+  
+  .reading h2.section-title { 
+    font-size: 1.35rem; 
+    font-weight: 700; 
+    margin: 48px 0 16px; 
+    padding-top: 24px; 
+    border-top: 1px solid var(--border); 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .reading h2.section-title:first-of-type { border-top: none; padding-top: 0; }
+  .reading h3 { font-size: 1.05rem; font-weight: 600; margin: 24px 0 8px; color: var(--text); }
+  .reading p { font-size: 1rem; color: var(--text-secondary); margin: 0 0 16px; }
+  .reading ul, .reading ol { font-size: 1rem; color: var(--text-secondary); margin: 0 0 20px; padding-left: 24px; }
+  .reading li { margin-bottom: 8px; }
+  
+  .formula {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    margin: 0 0 20px;
+    white-space: pre-wrap;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .callout {
+    background: var(--accent-bg);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 0 0 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .callout strong { color: var(--accent); font-weight: 600; }
+
+  /* Tables */
+  table.datatable { 
+    width: 100%; 
+    border-collapse: separate; 
+    border-spacing: 0; 
+    margin: 0 0 24px; 
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  table.datatable th, table.datatable td { 
+    padding: 10px 16px; 
+    text-align: left; 
+    border-bottom: 1px solid var(--border);
+  }
+  table.datatable tr:last-child td { border-bottom: none; }
+  table.datatable th { 
+    background: var(--surface); 
+    font-weight: 600; 
+    color: var(--text);
+  }
+  table.datatable td {
+    background: var(--card);
+    color: var(--text-secondary);
+  }
+
+  /* Interactive Simulator Components */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+  }
+  
+  .field { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+    font-size: 0.85rem; 
+    font-weight: 500;
+    color: var(--text-secondary); 
+  }
+
+  select {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0 12px;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  select:focus { border-color: var(--accent); }
+
+  input[type="range"] { 
+    width: 160px; 
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .btn-row { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+  
+  button {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  button:hover:not(:disabled) { 
+    background: var(--card); 
+    border-color: var(--accent); 
+    color: var(--accent);
+    box-shadow: var(--shadow-sm);
+  }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button.primary { 
+    background: var(--accent); 
+    color: #ffffff; 
+    border-color: var(--accent); 
+    font-weight: 600; 
+  }
+  button.primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    color: #ffffff;
+    border-color: var(--accent-hover);
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+  .stat-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 0; 
+    font-size: 0.9rem; 
+    border-bottom: 1px solid var(--border); 
+  }
+  .stat-row:last-of-type { border-bottom: none; }
+  .stat-label { color: var(--text-secondary); }
+  .stat-value { 
+    font-family: 'Fira Code', monospace; 
+    font-weight: 600; 
+    color: var(--text);
+  }
+
+  .example-box {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.825rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    border: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.775rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+  }
+  .badge.correct { background: var(--notspam-bg); color: var(--notspam); border: 1px solid var(--notspam-border); }
+  .badge.wrong { background: var(--spam-bg); color: var(--spam); border: 1px solid var(--spam-border); }
+  .badge.done { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
+
+  svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+  
+  .log {
+    max-height: 220px;
+    overflow-y: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.775rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 10px 14px;
+    margin-top: 10px;
+  }
+  .log div.updated { color: var(--accent); font-weight: 600; }
+
+  .hint { font-size: 0.825rem; color: var(--text-muted); margin-top: 10px; }
+  
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* Questions List */
+  .qlist { list-style: none; padding: 0; margin: 0; }
+  .qlist li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .qlist .qnum { color: var(--accent); font-weight: 700; margin-right: 6px; }
+  
+  .answer-space {
+    border-bottom: 2px dashed var(--border-strong);
+    height: 32px;
+    margin-top: 12px;
+    transition: border-color 0.2s ease;
+  }
+  .answer-space:focus-within {
+    border-color: var(--accent);
+  }
+
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 24px; }
+  .pill { 
+    background: var(--surface); 
+    border: 1px solid var(--border); 
+    border-radius: 20px; 
+    padding: 4px 14px; 
+    font-size: 0.9rem; 
+    font-weight: 500;
+    color: var(--text-secondary); 
+  }
+</style>
+</head>
+<body>
+
+<div class="reading">
+  <div class="pill-row">
+    <span class="pill">Seton Hill University: Fall 2026&ndash;Prepared by: Instructor: Sami Alshalwi</span>
+
+    <span class="pill">AI &amp; Machine Learning</span>
+    <span class="pill">Practice Packet</span>
+    <span class="pill">Estimated time: 30&ndash;40 min</span>
+  </div>
+  
+  <h1 class="page-title">The Perceptron Learning Rule</h1>
+  <p class="page-subtitle">Read through the four examples below, then use the interactive simulator at the bottom of this page to practice the calculations yourself. Answer the reflection questions as you go.</p>
+
+  <h2 class="section-title">1. The Core Idea</h2>
+  <p>A perceptron is the simplest artificial neuron. It takes inputs, multiplies each by a weight, sums them up (plus a bias), and passes the result through a step function to produce an output of 0 or 1.</p>
+  
+  <h3>Prediction Formula</h3>
+  <div class="formula">z = (w1 * x1) + (w2 * x2) + ... + (wn * xn) + b
+y_pred = 1 if z &gt;= 0, else 0</div>
+
+  <h3>The Learning Rule</h3>
+  <p>This is how the weights get updated after each training example:</p>
+  <div class="formula">wi_new = wi_old + &#951; * (y_true - y_pred) * xi
+b_new  = b_old  + &#951; * (y_true - y_pred)</div>
+  
+  <ul>
+    <li><strong>&#951; (eta):</strong> Learning rate, a small positive number (e.g., 0.1)</li>
+    <li><strong>y_true:</strong> The correct label</li>
+    <li><strong>y_pred:</strong> What the perceptron guessed</li>
+    <li><strong>(y_true &minus; y_pred):</strong> The error &mdash; the engine driving the learning process</li>
+  </ul>
+  
+  <div class="callout">
+    <strong>Key Idea:</strong> If the perceptron predicts correctly, <code>y_true &minus; y_pred = 0</code>, meaning no changes occur. Weights are updated strictly when the model makes an error.
+  </div>
+
+  <h2 class="section-title">2. Worked Example: The AND Gate</h2>
+  <p>Inputs x1, x2 &isin; {0, 1}, target y = x1 AND x2, starting weights w1 = 0, w2 = 0, b = 0, learning rate &#951; = 1.</p>
+  
+  <table class="datatable">
+    <thead>
+      <tr><th>x1</th><th>x2</th><th>y (AND)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>0</td><td>1</td><td>0</td></tr>
+      <tr><td>1</td><td>0</td><td>0</td></tr>
+      <tr><td>1</td><td>1</td><td>1</td></tr>
+    </tbody>
+  </table>
+  
+  <p>Stepping through the first epoch: the very first example (0,0) is misclassified (z = 0, which counts as predicting 1), so the bias drops to &minus;1. The next two examples are now classified correctly and cause no change. The last example (1,1) is misclassified, which pushes w1 and w2 up to 1 and the bias back to 0. After a second epoch, the weights settle at values like w1 = 1, w2 = 1, b = &minus;1, which correctly implements AND.</p>
+
+  <h2 class="section-title">3. Why It Fails: The XOR Problem</h2>
+  <p>Same setup, but the target is XOR:</p>
+  
+  <table class="datatable">
+    <thead>
+      <tr><th>x1</th><th>x2</th><th>y (XOR)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>0</td><td>1</td><td>1</td></tr>
+      <tr><td>1</td><td>0</td><td>1</td></tr>
+      <tr><td>1</td><td>1</td><td>0</td></tr>
+    </tbody>
+  </table>
+  
+  <p>No matter how many epochs you run, the weights never settle on a solution that classifies all four points correctly. Try plotting the four points: the two points labeled 1 sit diagonally from each other, and so do the two points labeled 0. A perceptron can only draw a single straight line to separate two classes, so it cannot separate them.</p>
+  
+  <div class="callout">
+    <strong>Takeaway:</strong> A single perceptron can only learn functions that are <em>linearly separable</em>. This limitation is precisely why modern architectures stack perceptrons into multi-layer neural networks.
+  </div>
+
+  <h2 class="section-title">4. Real-World Example: Spam Filter Trap</h2>
+  <p>Features: x1 = number of exclamation points in the email (scaled 0&ndash;1), x2 = whether the email contains the word &ldquo;free&rdquo; (1 = yes, 0 = no). Target: y = spam (1) or not spam (0).</p>
+  
+  <table class="datatable">
+    <thead>
+      <tr><th>Email</th><th>x1 (! marks)</th><th>x2 (has &ldquo;free&rdquo;)</th><th>y (spam)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A</td><td>0.9</td><td>1</td><td>1</td></tr>
+      <tr><td>B</td><td>0.1</td><td>0</td><td>0</td></tr>
+      <tr><td>C</td><td>0.8</td><td>0</td><td>1</td></tr>
+      <tr><td>D &mdash; the trap</td><td>0.2</td><td>1</td><td>0</td></tr>
+    </tbody>
+  </table>
+  
+  <p>Email D contains the word &ldquo;free&rdquo; (e.g., &ldquo;Let me know if you're free Tuesday&rdquo;) but isn't spam. If examples like D keep showing up in training, the weight on x2 ends up smaller than expected &mdash; highlighting why real spam filters utilize hundreds of combined features.</p>
+
+  <h2 class="section-title">5. Practice: Step Through It Yourself</h2>
+  <p>Use the interactive simulator below. Select a dataset, and before clicking &ldquo;Reveal &amp; apply,&rdquo; manually calculate the new w1, w2, and bias on paper. Complete at least one full epoch of the AND dataset and one full epoch of the spam dataset.</p>
+</div>
+
+<!-- Interactive Section -->
+<div class="wrap">
+  <h2 class="sr-only">Interactive perceptron simulator to observe weight updates step-by-step.</h2>
+
+  <div class="card">
+    <div class="controls-row">
+      <div class="field">
+        <label for="dataset">Dataset Choice</label>
+        <select id="dataset"></select>
+      </div>
+      <div class="field">
+        <label for="lr">Learning rate (&eta; = <span id="lrVal">1</span>)</label>
+        <input type="range" id="lr" min="0.1" max="1" step="0.1" value="1">
+      </div>
+      <div class="btn-row">
+        <button id="stepBtn" class="primary">Next example &rarr;</button>
+        <button id="revealBtn" disabled>Reveal &amp; apply</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin-top:0; margin-bottom:12px;">Current State</h3>
+      <div class="stat-row"><span class="stat-label">Epoch</span><span class="stat-value" id="epochVal">1</span></div>
+      <div class="stat-row"><span class="stat-label">w1</span><span class="stat-value" id="w1Val">0.00</span></div>
+      <div class="stat-row"><span class="stat-label">w2</span><span class="stat-value" id="w2Val">0.00</span></div>
+      <div class="stat-row"><span class="stat-label">bias</span><span class="stat-value" id="bVal">0.00</span></div>
+      <div class="stat-row"><span class="stat-label">Status</span><span class="stat-value" id="statusVal">ready</span></div>
+
+      <div class="example-box" id="exampleBox">Click "Next example" to begin.</div>
+      <div class="hint" id="hintBox"></div>
+
+      <h3 style="margin-top:20px; margin-bottom:8px;">Execution Log</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0; margin-bottom:12px;">Feature Space &amp; Decision Boundary</h3>
+      <svg id="plot" viewBox="0 0 320 320" role="img" aria-label="Scatter plot of training data points and current decision boundary line"></svg>
+      <div class="hint">Shaded region = predicted class 1 space. Boundary moves in real time as weights shift.</div>
+    </div>
+  </div>
+</div>
+
+<div class="reading">
+  <h2 class="section-title">6. Reflection Questions</h2>
+  <p>Answer these questions based on your observations with the simulator. Submit your answers as instructed.</p>
+  
+  <ul class="qlist">
+    <li>
+      <span class="qnum">1.</span> Run the AND dataset for one full epoch. How many of the four examples caused a weight update? Which one(s), and why?
+      <div class="answer-space" contenteditable="true"></div>
+    </li>
+    <li>
+      <span class="qnum">2.</span> Switch to the XOR dataset and run it for several epochs. What do you notice about the weights? Explain why a single perceptron fails here.
+      <div class="answer-space" contenteditable="true"></div>
+    </li>
+    <li>
+      <span class="qnum">3.</span> Switch to the spam dataset. After one full epoch, what is the weight on x2 (&ldquo;has free&rdquo;)? Why did Email D impact it in this way?
+      <div class="answer-space" contenteditable="true"></div>
+    </li>
+    <li>
+      <span class="qnum">4.</span> Compare learning rate 1.0 versus 0.1 on the same dataset. What changes about training speed and stability?
+      <div class="answer-space" contenteditable="true"></div>
+    </li>
+    <li>
+      <span class="qnum">5.</span> In your own words, explain why the perceptron rule makes zero adjustments when a prediction is correct.
+      <div class="answer-space" contenteditable="true"></div>
+    </li>
+  </ul>
+</div>
+
+<script>
+const DATASETS = {
+  and: {
+    label: "AND gate",
+    x1Label: "x1", x2Label: "x2",
+    points: [
+      { name: "(0,0)", x1: 0, x2: 0, y: 0 },
+      { name: "(0,1)", x1: 0, x2: 1, y: 0 },
+      { name: "(1,0)", x1: 1, x2: 0, y: 0 },
+      { name: "(1,1)", x1: 1, x2: 1, y: 1 },
+    ],
+    domain: [-0.3, 1.3],
+  },
+  or: {
+    label: "OR gate",
+    x1Label: "x1", x2Label: "x2",
+    points: [
+      { name: "(0,0)", x1: 0, x2: 0, y: 0 },
+      { name: "(0,1)", x1: 0, x2: 1, y: 1 },
+      { name: "(1,0)", x1: 1, x2: 0, y: 1 },
+      { name: "(1,1)", x1: 1, x2: 1, y: 1 },
+    ],
+    domain: [-0.3, 1.3],
+  },
+  xor: {
+    label: "XOR gate (will not converge)",
+    x1Label: "x1", x2Label: "x2",
+    points: [
+      { name: "(0,0)", x1: 0, x2: 0, y: 0 },
+      { name: "(0,1)", x1: 0, x2: 1, y: 1 },
+      { name: "(1,0)", x1: 1, x2: 0, y: 1 },
+      { name: "(1,1)", x1: 1, x2: 1, y: 0 },
+    ],
+    domain: [-0.3, 1.3],
+    maxEpochs: 6,
+  },
+  spam: {
+    label: "Spam filter (with the \u201cfree\u201d trap)",
+    x1Label: "! marks", x2Label: "has \u201cfree\u201d",
+    points: [
+      { name: "Email A", x1: 0.9, x2: 1, y: 1 },
+      { name: "Email B", x1: 0.1, x2: 0, y: 0 },
+      { name: "Email C", x1: 0.8, x2: 0, y: 1 },
+      { name: "Email D (trap)", x1: 0.2, x2: 1, y: 0 },
+    ],
+    domain: [-0.2, 1.2],
+  },
+};
+
+let ds, order, idx, epoch, w1, w2, b, lr, pendingUpdate, converged, history, maxEpochs;
+
+function fmt(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+
+function initDataset(key) {
+  ds = DATASETS[key];
+  order = ds.points.map((_, i) => i);
+  idx = 0;
+  epoch = 1;
+  w1 = 0; w2 = 0; b = 0;
+  pendingUpdate = null;
+  converged = false;
+  history = [];
+  maxEpochs = ds.maxEpochs || 20;
+  document.getElementById("exampleBox").textContent = 'Click "Next example" to begin.';
+  document.getElementById("hintBox").textContent = "";
+  document.getElementById("log").innerHTML = "";
+  document.getElementById("statusVal").textContent = "ready";
+  document.getElementById("revealBtn").disabled = true;
+  document.getElementById("stepBtn").disabled = false;
+  render();
+  drawPlot();
+}
+
+function currentPoint() { return ds.points[order[idx]]; }
+
+function predict(x1, x2) {
+  const z = w1 * x1 + w2 * x2 + b;
+  return z >= 0 ? 1 : 0;
+}
+
+function showNextExample() {
+  if (converged) return;
+  const p = currentPoint();
+  const yPred = predict(p.x1, p.x2);
+  const error = p.y - yPred;
+  const z = w1 * x1term(p) + w2 * x2term(p) + b;
+
+  let text = "";
+  text += p.name + "   x1=" + fmt(p.x1) + ", x2=" + fmt(p.x2) + ", true y=" + p.y + "\n\n";
+  text += "z = (" + fmt(w1) + " * " + fmt(p.x1) + ") + (" + fmt(w2) + " * " + fmt(p.x2) + ") + " + fmt(b) + "\n";
+  text += "z = " + fmt(z) + "  ->  predicted y = " + yPred + "\n\n";
+  text += "error = y_true - y_pred = " + p.y + " - " + yPred + " = " + error;
+
+  document.getElementById("exampleBox").textContent = text;
+
+  if (error === 0) {
+    document.getElementById("hintBox").innerHTML = '<span class="badge correct">Correct prediction \u2014 no update needed</span>';
+    pendingUpdate = { p, yPred, error, w1: w1, w2: w2, b: b, noChange: true };
+    document.getElementById("revealBtn").disabled = false;
+    document.getElementById("stepBtn").disabled = true;
+  } else {
+    document.getElementById("hintBox").innerHTML =
+      '<span class="badge wrong">Misclassified</span> &mdash; work out the new w1, w2, b by hand, then reveal.';
+    pendingUpdate = { p, yPred, error };
+    document.getElementById("revealBtn").disabled = false;
+    document.getElementById("stepBtn").disabled = true;
+  }
+}
+
+function x1term(p) { return p.x1; }
+function x2term(p) { return p.x2; }
+
+function revealAndApply() {
+  if (!pendingUpdate) return;
+  const { p, yPred, error, noChange } = pendingUpdate;
+  let logLine;
+
+  if (noChange) {
+    logLine = "Epoch " + epoch + ", " + p.name + ": correct (y_pred=" + yPred + "), no change";
+  } else {
+    const dw1 = lr * error * p.x1;
+    const dw2 = lr * error * p.x2;
+    const db = lr * error;
+    const newW1 = w1 + dw1;
+    const newW2 = w2 + dw2;
+    const newB = b + db;
+    logLine = "Epoch " + epoch + ", " + p.name + ": error=" + error +
+      "  \u2192  w1 " + fmt(w1) + "\u2192" + fmt(newW1) +
+      ", w2 " + fmt(w2) + "\u2192" + fmt(newW2) +
+      ", b " + fmt(b) + "\u2192" + fmt(newB);
+    w1 = newW1; w2 = newW2; b = newB;
+  }
+
+  addLog(logLine, !noChange);
+  advance();
+}
+
+function addLog(text, updated) {
+  const div = document.createElement("div");
+  if (updated) div.className = "updated";
+  div.textContent = text;
+  const log = document.getElementById("log");
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function advance() {
+  idx++;
+  if (idx >= order.length) {
+    idx = 0;
+    epoch++;
+  }
+  pendingUpdate = null;
+  render();
+  drawPlot();
+
+  if (checkConverged()) {
+    converged = true;
+    document.getElementById("statusVal").innerHTML = '<span class="badge done">Converged!</span>';
+    document.getElementById("exampleBox").textContent = "All examples classified correctly. Training complete after " + (epoch) + " epoch(s) reaching this point.";
+    document.getElementById("hintBox").textContent = "";
+    document.getElementById("stepBtn").disabled = true;
+    document.getElementById("revealBtn").disabled = true;
+    return;
+  }
+  if (epoch > maxEpochs) {
+    document.getElementById("statusVal").textContent = "not linearly separable";
+    document.getElementById("exampleBox").textContent = "Weights keep oscillating after " + maxEpochs + " epochs \u2014 this dataset is not linearly separable, so a single perceptron cannot converge on it.";
+    document.getElementById("hintBox").textContent = "";
+    document.getElementById("stepBtn").disabled = true;
+    document.getElementById("revealBtn").disabled = true;
+    return;
+  }
+
+  document.getElementById("stepBtn").disabled = false;
+  document.getElementById("revealBtn").disabled = true;
+}
+
+function checkConverged() {
+  return ds.points.every((p) => predict(p.x1, p.x2) === p.y);
+}
+
+function render() {
+  document.getElementById("epochVal").textContent = epoch;
+  document.getElementById("w1Val").textContent = fmt(w1);
+  document.getElementById("w2Val").textContent = fmt(w2);
+  document.getElementById("bVal").textContent = fmt(b);
+  if (!converged) document.getElementById("statusVal").textContent = "training";
+}
+
+function drawPlot() {
+  const svg = document.getElementById("plot");
+  const [lo, hi] = ds.domain;
+  const pad = 40, size = 320, plotSize = size - pad * 2;
+  const sx = (v) => pad + ((v - lo) / (hi - lo)) * plotSize;
+  const sy = (v) => size - pad - ((v - lo) / (hi - lo)) * plotSize;
+
+  let svgContent = "";
+  svgContent += '<defs><clipPath id="clip"><rect x="' + pad + '" y="' + pad + '" width="' + plotSize + '" height="' + plotSize + '"/></clipPath></defs>';
+
+  const region = decisionRegionPolygon(lo, hi, sx, sy);
+  if (region) {
+    svgContent += '<g clip-path="url(#clip)"><polygon points="' + region + '" fill="var(--accent)" opacity="0.15"/></g>';
+  }
+
+  svgContent += '<rect x="' + pad + '" y="' + pad + '" width="' + plotSize + '" height="' + plotSize + '" fill="none" stroke="var(--border-strong)" stroke-width="1"/>';
+
+  const line = decisionLine(lo, hi, sx, sy);
+  if (line) {
+    svgContent += '<line x1="' + line[0] + '" y1="' + line[1] + '" x2="' + line[2] + '" y2="' + line[3] + '" stroke="var(--accent)" stroke-width="2.5"/>';
+  }
+
+  svgContent += '<text x="' + (pad + plotSize / 2) + '" y="' + (size - 10) + '" text-anchor="middle" font-size="11" font-weight="500" fill="var(--text-secondary)">' + ds.x1Label + '</text>';
+  svgContent += '<text x="14" y="' + (pad + plotSize / 2) + '" text-anchor="middle" font-size="11" font-weight="500" fill="var(--text-secondary)" transform="rotate(-90 14,' + (pad + plotSize / 2) + ')">' + ds.x2Label + '</text>';
+
+  ds.points.forEach((p, i) => {
+    const cx = sx(p.x1), cy = sy(p.x2);
+    const isCurrent = i === order[idx] && !converged;
+    const fill = p.y === 1 ? "var(--spam)" : "var(--notspam)";
+    svgContent += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (isCurrent ? 8 : 6) + '" fill="' + fill + '" stroke="var(--card)" stroke-width="2"/>';
+    if (isCurrent) {
+      svgContent += '<circle cx="' + cx + '" cy="' + cy + '" r="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 3"/>';
+    }
+  });
+
+  svgContent += '<circle cx="' + pad + '" cy="16" r="4.5" fill="var(--spam)"/><text x="' + (pad + 10) + '" y="19" font-size="11" font-weight="500" fill="var(--text-secondary)">class 1</text>';
+  svgContent += '<circle cx="' + (pad + 70) + '" cy="16" r="4.5" fill="var(--notspam)"/><text x="' + (pad + 80) + '" y="19" font-size="11" font-weight="500" fill="var(--text-secondary)">class 0</text>';
+
+  svg.innerHTML = svgContent;
+}
+
+function decisionLine(lo, hi, sx, sy) {
+  if (w1 === 0 && w2 === 0) return null;
+  const pts = [];
+  if (Math.abs(w2) > 1e-9) {
+    const x2at = (x1) => -(w1 * x1 + b) / w2;
+    pts.push([lo, x2at(lo)]);
+    pts.push([hi, x2at(hi)]);
+  } else if (Math.abs(w1) > 1e-9) {
+    const x1v = -b / w1;
+    pts.push([x1v, lo]);
+    pts.push([x1v, hi]);
+  } else {
+    return null;
+  }
+  return [sx(pts[0][0]), sy(pts[0][1]), sx(pts[1][0]), sy(pts[1][1])];
+}
+
+function decisionRegionPolygon(lo, hi, sx, sy) {
+  if (w1 === 0 && w2 === 0 && b < 0) return null;
+  if (w1 === 0 && w2 === 0 && b >= 0) {
+    return [ [lo,lo],[hi,lo],[hi,hi],[lo,hi] ].map(([a,c]) => sx(a) + "," + sy(c)).join(" ");
+  }
+  const corners = [ [lo,lo], [hi,lo], [hi,hi], [lo,hi] ];
+  const side = (x1, x2) => w1 * x1 + w2 * x2 + b >= 0;
+  const poly = [];
+  for (let i = 0; i < 4; i++) {
+    const [x1a, x2a] = corners[i];
+    const [x1b, x2b] = corners[(i + 1) % 4];
+    const aIn = side(x1a, x2a), bIn = side(x1b, x2b);
+    if (aIn) poly.push([x1a, x2a]);
+    if (aIn !== bIn) {
+      let t;
+      const denom = w1 * (x1b - x1a) + w2 * (x2b - x2a);
+      if (Math.abs(denom) > 1e-9) {
+        t = -(w1 * x1a + w2 * x2a + b) / denom;
+        t = Math.max(0, Math.min(1, t));
+        poly.push([x1a + t * (x1b - x1a), x2a + t * (x2b - x2a)]);
+      }
+    }
+  }
+  if (poly.length < 3) return null;
+  return poly.map(([a, c]) => sx(a) + "," + sy(c)).join(" ");
+}
+
+document.getElementById("dataset").innerHTML = Object.entries(DATASETS)
+  .map(([k, v]) => '<option value="' + k + '">' + v.label + '</option>').join("");
+
+document.getElementById("dataset").addEventListener("change", (e) => initDataset(e.target.value));
+document.getElementById("lr").addEventListener("input", (e) => {
+  lr = parseFloat(e.target.value);
+  document.getElementById("lrVal").textContent = lr.toFixed(1);
+});
+document.getElementById("stepBtn").addEventListener("click", showNextExample);
+document.getElementById("revealBtn").addEventListener("click", revealAndApply);
+document.getElementById("resetBtn").addEventListener("click", () => initDataset(document.getElementById("dataset").value));
+
+lr = 1;
+initDataset("and");
+</script>
+</body>
+</html>
